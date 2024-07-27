@@ -3,7 +3,6 @@ import { updateSession } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
   const data = await updateSession(request);
-  console.log("data", data);
   return data;
 }
 

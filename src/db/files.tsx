@@ -1,23 +1,30 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
+import { getUserFromCookies } from "@/utils/cookies";
 
-export async function getRole(file: any, userId: string) {
+export async function uploadImage(formData: FormData) {
+  const file = formData.get("file") as File;
+  console.log("file", file);
   const supabase = createClient();
+  const { role, userId } = getUserFromCookies();
+  console.log("role", role, userId);
 
   const { data, error } = await supabase.storage
     .from("uploads")
-    .upload(`file_${Date.now()}`, file);
+    .upload(userId + "/" + Date.now(), file);
 
   if (error) throw error;
   return data;
 }
 export async function listFiles() {
   const supabase = createClient();
+  const { role, userId } = getUserFromCookies();
 
-  const { data, error } = await supabase.storage.from("objects").list();
+  const { data, error } = await supabase.storage
+    .from("uploads")
+    .list(userId + "/");
+
   if (error) throw error;
-
-  console.log("data", data);
 
   return { data };
 }
