@@ -2,29 +2,42 @@
 import { createClient } from "@/utils/supabase/server";
 import { getUserFromCookies } from "@/utils/cookies";
 
-export async function uploadImage(formData: FormData) {
+export async function uploadImage(projectId: string, formData: FormData) {
   const file = formData.get("file") as File;
-  console.log("file", file);
   const supabase = createClient();
   const { role, userId } = getUserFromCookies();
-  console.log("role", role, userId);
-
+  const filePath = `${userId}/${projectId}/${file.name}`;
   const { data, error } = await supabase.storage
     .from("uploads")
-    .upload(userId + "/" + Date.now(), file);
+    .upload(filePath, file);
 
-  if (error) throw error;
+  if (error) {
+    console.log("error", error);
+    throw error;
+  }
   return data;
 }
-export async function listFiles() {
+export async function listFiles(projectId: string, userId: string) {
   const supabase = createClient();
-  const { role, userId } = getUserFromCookies();
-
   const { data, error } = await supabase.storage
     .from("uploads")
-    .list(userId + "/");
+    .list(userId + "/" + projectId);
 
   if (error) throw error;
 
-  return { data };
+  const filesWithUrls = await Promise.all(
+    data.map(async (file) => {
+      const { data: url } = await supabase.storage
+        .from("uploads")
+        .getPublicUrl(`${userId}/${projectId}/${file.name}`);
+
+      if (!url) {
+        console.error("Error obtaining public URL:");
+        return { url: null };
+      }
+
+      return { url: url.publicUrl }; // Append the public URL to the file object
+    })
+  );
+  return { filesWithUrls };
 }

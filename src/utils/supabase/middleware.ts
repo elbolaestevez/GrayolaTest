@@ -34,18 +34,6 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const role = await getRole(user?.id);
-
-  if (user && role) {
-    supabaseResponse.cookies.set("userId", user.id, {
-      path: "/",
-      httpOnly: true,
-    });
-    supabaseResponse.cookies.set("userRole", role, {
-      path: "/",
-      httpOnly: true,
-    });
-  }
   if (
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
@@ -55,6 +43,18 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
+  }
+  if (user) {
+    const role = await getRole(user?.id);
+
+    supabaseResponse.cookies.set("userId", user.id, {
+      path: "/",
+      httpOnly: true,
+    });
+    supabaseResponse.cookies.set("userRole", role, {
+      path: "/",
+      httpOnly: true,
+    });
   }
 
   return supabaseResponse;

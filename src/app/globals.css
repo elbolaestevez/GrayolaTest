@@ -5,6 +5,12 @@
 @layer base {
 }
 
+html,
+body {
+  height: 100vh;
+  background-color: blueviolet;
+}
+
 @layer base {
   * {
     @apply border-border;
