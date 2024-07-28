@@ -17,28 +17,31 @@ import { uploadImage } from "@/db/files";
 import { createProyect } from "@/db/proyects";
 
 export const CreateProject = ({ isCreateMode }: { isCreateMode: boolean }) => {
-  const [upload, setUpload] = useState<FormData | null>(null);
+  const [uploads, setUploads] = useState<FormData[]>([]);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
   const isEnabled =
-    !!upload && title.trim().length > 0 && description.trim().length > 0;
+    uploads.length > 0 &&
+    title.trim().length > 0 &&
+    description.trim().length > 0;
 
   const handleGetUpload = (uploadData: FormData) => {
-    setUpload(uploadData);
+    setUploads((currentUploads) => [...currentUploads, uploadData]);
   };
 
   const handleCLose = () => {
     setTitle("");
     setDescription("");
-    setUpload(null);
+    setUploads([]);
   };
 
   const handleCreateProyect = async () => {
     if (isEnabled) {
       const project = await createProyect(title, description);
-      console.log("projecttt", project);
-      uploadImage(project?.id, upload);
+      uploads.forEach((upload) => {
+        uploadImage(project?.id, upload);
+      });
       handleCLose();
     }
   };

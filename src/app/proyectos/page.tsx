@@ -13,7 +13,7 @@ const Proyectos = async () => {
       <div className="pt-2 ">
         <Header />
       </div>
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap mt-12">
         {projects?.map((project) => (
           <div key={project.id} className="px-3 mt-2 mb-2">
             <ProjectCard project={project} />
