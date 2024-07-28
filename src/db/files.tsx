@@ -1,6 +1,7 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
 import { getUserFromCookies } from "@/utils/cookies";
+import { revalidatePath } from "next/cache";
 
 export async function uploadImage(projectId: string, formData: FormData) {
   const file = formData.get("file") as File;
@@ -15,6 +16,7 @@ export async function uploadImage(projectId: string, formData: FormData) {
     console.log("error", error);
     throw error;
   }
+  await revalidatePath("/proyectos");
   return data;
 }
 export async function listFiles(projectId: string, userId: string) {

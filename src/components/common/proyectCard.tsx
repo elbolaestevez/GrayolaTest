@@ -8,29 +8,22 @@ import {
 } from "@/components/ui/index";
 import { listFiles } from "@/db/files";
 import Link from "next/link";
+import { EditMenu } from "../edit-menu";
+import { ProjectCardProps } from "@/types/project";
 
-interface ProjectProps {
-  id: string;
-  description: string;
-  title: string;
-  user_id: string;
-}
-
-interface ProyectCardProps {
-  project: ProjectProps;
-}
-
-export async function ProjectCard({ project }: ProyectCardProps) {
+export async function ProjectCard({ project }: ProjectCardProps) {
   const { filesWithUrls } = await listFiles(project.id, project.user_id);
   const { title, description } = project;
-  console.log("filesWithUrls", filesWithUrls);
   return (
     <Card className="w-[350px]">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <div className="flex justify-between">
+          <CardTitle>{title}</CardTitle>
+          <EditMenu filesWithUrls={filesWithUrls} project={project} />
+        </div>
       </CardHeader>
       <CardContent>{description}</CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex flex-w gap-2">
         {filesWithUrls.length > 0 ? (
           filesWithUrls.map((file, i) => (
             <Link key={i} href={file.url || ""} passHref legacyBehavior>

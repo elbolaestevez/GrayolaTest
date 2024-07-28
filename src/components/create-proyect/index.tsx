@@ -10,30 +10,75 @@ import {
   Input,
   Label,
   DialogClose,
+  Badge,
 } from "@/components/ui/index";
 import { InputFile } from "../common/inputFile";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { uploadImage } from "@/db/files";
 import { createProyect } from "@/db/proyects";
+import { RxCross2 } from "react-icons/rx";
+import { useToast } from "../ui/use-toast";
+import { ProjectProps } from "@/types/project";
 
-export const CreateProject = ({ isCreateMode }: { isCreateMode: boolean }) => {
+interface CreateProjectProps {
+  isCreateMode: boolean;
+  project?: ProjectProps;
+  filesWithUrls?: (
+    | {
+        url: null;
+      }
+    | {
+        url: string;
+      }
+  )[];
+}
+
+export const CreateProject: React.FC<CreateProjectProps> = ({
+  isCreateMode,
+  project,
+  filesWithUrls,
+}) => {
   const [uploads, setUploads] = useState<FormData[]>([]);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const inputFileRef = useRef<HTMLInputElement>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setTitle(project?.title || "");
+    setDescription(project?.description || "");
+  }, [project]);
 
   const isEnabled =
     uploads.length > 0 &&
     title.trim().length > 0 &&
     description.trim().length > 0;
 
-  const handleGetUpload = (uploadData: FormData) => {
-    setUploads((currentUploads) => [...currentUploads, uploadData]);
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      if (selectedFiles.length >= 1) {
+        toast({
+          description: "Ya superaste el limite de archivos",
+        });
+        return;
+      }
+      setSelectedFiles((currentFiles) => [...currentFiles, file]);
+      setUploads((currentFiles) => [...currentFiles, formData]);
+    }
+    if (inputFileRef.current) {
+      inputFileRef.current.value = "";
+    }
   };
 
   const handleCLose = () => {
     setTitle("");
     setDescription("");
     setUploads([]);
+    setSelectedFiles([]);
   };
 
   const handleCreateProyect = async () => {
@@ -42,15 +87,26 @@ export const CreateProject = ({ isCreateMode }: { isCreateMode: boolean }) => {
       uploads.forEach((upload) => {
         uploadImage(project?.id, upload);
       });
+      toast({
+        description: "Has creado el proyecto",
+      });
+
       handleCLose();
     }
+  };
+
+  const handleRemoveFile = (fileName: string) => {
+    setSelectedFiles(selectedFiles.filter((file) => file.name !== fileName));
   };
 
   return (
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="w-[120px]" variant="outline">
+          <Button
+            style={isCreateMode ? {} : { border: "none" }}
+            variant="outline"
+          >
             {isCreateMode ? "Crear Proyecto" : "Editar proyecto"}
           </Button>
         </DialogTrigger>
@@ -85,24 +141,35 @@ export const CreateProject = ({ isCreateMode }: { isCreateMode: boolean }) => {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
-            <InputFile handleGetUpload={handleGetUpload} />
+            <InputFile
+              handleFileChange={handleFileChange}
+              inputFileRef={inputFileRef}
+            />
+            <div className="mt-2 flex flex-col gap-1">
+              {selectedFiles.map((file, i) => (
+                <div key={i} className="flex items-center gap-0.5">
+                  <Badge>{file.name}</Badge>
+                  <RxCross2 onClick={() => handleRemoveFile(file.name)} />
+                </div>
+              ))}
+            </div>
           </div>
           <DialogFooter>
-            <DialogClose aria-label="Close">
+            <DialogClose asChild aria-label="Close">
               <Button
-                variant="outline"
-                type="button"
                 onClick={() => {
                   handleCLose();
                 }}
+                variant="outline"
               >
                 Cancelar
               </Button>
             </DialogClose>
-
-            <Button onClick={handleCreateProyect} disabled={!isEnabled}>
-              Guardar
-            </Button>
+            <DialogClose asChild aria-label="Close">
+              <Button onClick={handleCreateProyect} disabled={!isEnabled}>
+                Guardar
+              </Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -6,8 +6,6 @@ import { getProjectsByUserId } from "@/db/proyects";
 const Proyectos = async () => {
   const projects = await getProjectsByUserId();
 
-  console.log("nuevoo", projects);
-
   return (
     <div className="h-full w-[90%] m-auto">
       <div className="pt-2 ">
