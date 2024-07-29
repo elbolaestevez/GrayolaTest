@@ -1,4 +1,3 @@
-import React from "react";
 import { ProjectCard } from "@/components/common/proyectCard";
 import { Header } from "@/components/common/header";
 import { getProjectsByUserId, getActiveProjects } from "@/db/proyects";
@@ -9,10 +8,9 @@ const Proyectos = async () => {
   const user = await getUser();
   let projects;
   if (user?.role === "client") {
-    projects = await getProjectsByUserId();
+    projects = await getProjectsByUserId(user?.id);
   } else if (user?.role === "designer") {
-    console.log("entrooooooo");
-    projects = await getProjectsByDesigner();
+    projects = await getProjectsByDesigner(user?.id);
   } else if (user?.role === "admin") {
     projects = await getActiveProjects();
   }

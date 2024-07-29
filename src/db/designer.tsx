@@ -19,9 +19,8 @@ export async function getAllDesigners() {
   return data;
 }
 
-export async function getProjectsByDesigner() {
+export async function getProjectsByDesigner(userId: string) {
   const supabase = createClient();
-  const { userId } = getUserFromCookies();
 
   const { data, error } = await supabase
     .from("designer")

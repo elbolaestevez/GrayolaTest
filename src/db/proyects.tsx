@@ -25,9 +25,8 @@ export async function createProyect(title: string, description: string) {
   return data[0];
 }
 
-export async function getProjectsByUserId() {
+export async function getProjectsByUserId(userId: string) {
   const supabase = createClient();
-  const { userId } = await getUserFromCookies();
   const { data, error } = await supabase
     .from("project")
     .select("*")
@@ -38,6 +37,7 @@ export async function getProjectsByUserId() {
     console.log("Error fetching projects:", error);
     return null;
   }
+  await revalidatePath("/proyectos");
 
   return data;
 }
@@ -53,6 +53,7 @@ export async function getActiveProjects() {
     console.log("Error fetching projects:", error);
     return null;
   }
+  await revalidatePath("/proyectos");
 
   return data;
 }
