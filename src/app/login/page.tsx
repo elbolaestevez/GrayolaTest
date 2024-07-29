@@ -1,8 +1,7 @@
 "use client";
 import { useToast } from "@/components/ui/use-toast";
-import { login, signup } from "./actions";
+import { login, signup } from "@/db/user";
 import { Button, Input, Label } from "@/components/ui";
-import { useState } from "react";
 
 export default function LoginPage() {
   const { toast } = useToast();

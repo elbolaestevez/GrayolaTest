@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { getUser } from "@/db/get-user";
-import { singOut } from "@/db/sign-out";
+import { singOut } from "@/db/user";
 import { redirect } from "next/navigation";
 import { ProjectForm } from "@/components/project-form/index";
 
