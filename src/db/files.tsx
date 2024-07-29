@@ -39,7 +39,7 @@ export async function listFiles(projectId: string, userId: string) {
         .getPublicUrl(`${userId}/${projectId}/${file.name}`);
 
       if (!url) {
-        console.error("Error obtaining public URL:");
+        console.log("Error obtaining public URL:");
         return { url: null };
       }
 
@@ -56,7 +56,7 @@ export async function deleteFileFromStorage(filePath: string) {
     .remove([filePath]);
 
   if (error) {
-    console.error("Error al eliminar el archivo:", error.message);
+    console.log("Error al eliminar el archivo:", error.message);
     return false;
   }
   await revalidatePath("/proyectos");

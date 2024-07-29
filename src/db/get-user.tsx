@@ -7,7 +7,7 @@ export async function getUser() {
   const { data, error } = await supabase.auth.getUser();
 
   if (error) {
-    console.error("Error fetching user:", error);
+    console.log("Error fetching user:", error);
     return null;
   }
   if (data.user) {
@@ -18,7 +18,7 @@ export async function getUser() {
       .single();
 
     if (usersError) {
-      console.error("Error fetching user role:", usersError);
+      console.log("Error fetching user role:", usersError);
       return data.user;
     }
 

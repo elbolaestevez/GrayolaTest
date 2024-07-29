@@ -12,7 +12,7 @@ export async function getAllDesigners() {
     .eq("role", "designer");
 
   if (error) {
-    console.error("Error fetching designers:", error);
+    console.log("Error fetching designers:", error);
     return;
   }
 
@@ -28,7 +28,7 @@ export async function getProjectsByDesigner(userId: string) {
     .eq("user_id", userId);
 
   if (error) {
-    console.error("Error fetching designer entries:", error);
+    console.log("Error fetching designer entries:", error);
   } else {
     const project_ids = data.map((entry) => entry.project_id);
     const { data: projectsData, error: projectsError } = await supabase
@@ -37,7 +37,7 @@ export async function getProjectsByDesigner(userId: string) {
       .in("id", project_ids);
 
     if (projectsError) {
-      console.error("Error fetching projects2:", projectsError);
+      console.log("Error fetching projects2:", projectsError);
     } else {
       console.log("Projects:", projectsData);
     }
@@ -54,7 +54,7 @@ export async function getDesignersEmailsByProject(projectId: string) {
     .eq("project_id", projectId);
 
   if (error) {
-    console.error("Error fetching designers:", error);
+    console.log("Error fetching designers:", error);
     return;
   }
   const designer_ids = designers.map((entry) => entry.user_id);
@@ -65,7 +65,7 @@ export async function getDesignersEmailsByProject(projectId: string) {
     .in("user_id", designer_ids);
 
   if (designersError) {
-    console.error("Error fetching designers emails:", designersError);
+    console.log("Error fetching designers emails:", designersError);
   }
 
   return designerEmail;
@@ -79,7 +79,7 @@ export async function assignDesigners(projectId: string, newUserIds: string[]) {
     .match({ project_id: projectId });
 
   if (deleteError) {
-    console.error("Error deleting existing designers:", deleteError);
+    console.log("Error deleting existing designers:", deleteError);
     return { error: deleteError };
   }
 
@@ -93,7 +93,7 @@ export async function assignDesigners(projectId: string, newUserIds: string[]) {
     .insert(designerEntries);
 
   if (error) {
-    console.error("Error inserting designers:", error);
+    console.log("Error inserting designers:", error);
     return { error };
   }
   await revalidatePath("/proyectos");

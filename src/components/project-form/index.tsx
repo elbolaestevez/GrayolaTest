@@ -101,6 +101,11 @@ export const ProjectForm: React.FC<CreateProjectProps> = ({
 
   const handleCreateProyect = async () => {
     const project = await createProyect(title, description);
+    if (!project) {
+      toast({
+        description: "No se ha podido crear el proyecto",
+      });
+    }
     uploads.forEach((upload) => {
       uploadImage(project?.id, upload, project.user_id);
     });
