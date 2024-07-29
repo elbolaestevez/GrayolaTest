@@ -15,9 +15,14 @@ import {
   SelectItem,
   SelectLabel,
 } from "../ui/index";
-import { getDesignersEmailsByProject, getAllDesigners } from "@/db/designer";
+import {
+  getDesignersEmailsByProject,
+  getAllDesigners,
+  assignDesigners,
+} from "@/db/designer";
 import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
+import { useToast } from "../ui/use-toast";
 
 interface AssignProjectProps {
   project: ProjectProps;
@@ -32,6 +37,7 @@ interface User {
 export const AssignForm: React.FC<AssignProjectProps> = ({ project }) => {
   const [designersByProject, setDesignersByProject] = useState<User[]>([]);
   const [designers, setDesigners] = useState<User[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchDesignersByProject = async () => {
@@ -80,41 +86,57 @@ export const AssignForm: React.FC<AssignProjectProps> = ({ project }) => {
     );
   };
 
+  const handleSaveAssignment = async () => {
+    const designersIds = designersByProject.map((designer) => designer.user_id);
+    await assignDesigners(project.id, designersIds);
+    toast({
+      description: "Has Asignado el proyecto",
+    });
+  };
+
   return (
     <>
       <DialogHeader>
         <DialogTitle>Asignar proyecto</DialogTitle>
       </DialogHeader>
-      <h2>Ver diseñadores</h2>
-      <div className="mt-2 flex flex-wrap gap-1">
-        {designersByProject.map((designer) => (
-          <div key={designer.user_id} className="flex items-center gap-0.5">
-            <Badge key={designer.id}>{designer.email}</Badge>
-            <RxCross2 onClick={() => handleRemoveDesigner(designer.user_id)} />
-          </div>
-        ))}
+      <h2>Ver diseñadores:</h2>
+      <div className="mt-1 flex flex-wrap gap-1">
+        {designersByProject.length > 0 ? (
+          designersByProject.map((designer) => (
+            <div key={designer.user_id} className="flex items-center gap-0.5">
+              <Badge>{designer.email}</Badge>
+              <RxCross2
+                onClick={() => handleRemoveDesigner(designer.user_id)}
+              />
+            </div>
+          ))
+        ) : (
+          <p className="text-sm">No hay diseñadores en este proyecto</p>
+        )}
       </div>
-      <Select onValueChange={handleSelectDesigner}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Seleccionar diseñadores" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Diseñadores</SelectLabel>
-            {designers.map((designer) => (
-              <SelectItem key={designer.id} value={designer.user_id}>
-                {designer.email}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+      <div className="mt-2">
+        <Select onValueChange={handleSelectDesigner}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Seleccionar diseñadores" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Diseñadores</SelectLabel>
+              {designers.map((designer) => (
+                <SelectItem key={designer.id} value={designer.user_id}>
+                  {designer.email}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
       <DialogFooter>
         <DialogClose asChild aria-label="Close">
           <Button variant="outline">Cancelar</Button>
         </DialogClose>
         <DialogClose asChild aria-label="Close">
-          <Button>Guardar</Button>
+          <Button onClick={handleSaveAssignment}>Guardar</Button>
         </DialogClose>
       </DialogFooter>
     </>

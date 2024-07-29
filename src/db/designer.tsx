@@ -1,6 +1,7 @@
 "use server";
 import { getUserFromCookies } from "@/utils/cookies";
 import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 
 export async function getAllDesigners() {
   const supabase = createClient();
@@ -87,8 +88,8 @@ export async function assignDesigners(projectId: string, userIds: string[]) {
     console.error("Error inserting designers:", error);
     return { error };
   }
+  await revalidatePath("/proyectos");
 
-  console.log("Inserted designers:", data);
   return { data };
 }
 
