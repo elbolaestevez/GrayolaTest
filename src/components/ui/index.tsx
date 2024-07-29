@@ -19,4 +19,6 @@ export {
   MenubarMenu,
   MenubarTrigger,
   MenubarContent,
+  MenubarSeparator,
+  MenubarItem,
 } from "./menubar";

@@ -8,7 +8,23 @@ export async function getUser() {
 
   if (error) {
     console.error("Error fetching user:", error);
-    return null; // O maneja el error como prefieras
+    return null;
+  }
+  if (data.user) {
+    const { data: rolesData, error: rolesError } = await supabase
+      .from("roles")
+      .select("role")
+      .eq("user_id", data.user.id)
+      .single();
+
+    if (rolesError) {
+      console.error("Error fetching user role:", rolesError);
+      return data.user;
+    }
+
+    if (rolesData) {
+      data.user.role = rolesData.role;
+    }
   }
 
   return data.user;

@@ -1,10 +1,22 @@
 import React from "react";
 import { ProjectCard } from "@/components/common/proyectCard";
 import { Header } from "@/components/common/header";
-import { getProjectsByUserId } from "@/db/proyects";
+import { getProjectsByUserId, getActiveProjects } from "@/db/proyects";
+import { getUser } from "@/db/get-user";
+import { getProjectsByDesigner } from "@/db/designer";
 
 const Proyectos = async () => {
-  const projects = await getProjectsByUserId();
+  const user = await getUser();
+  let projects;
+  if (user?.role === "client") {
+    projects = await getProjectsByUserId();
+  } else if (user?.role === "designer") {
+    console.log("entrooooooo");
+    projects = await getProjectsByDesigner();
+  } else if (user?.role === "admin") {
+    projects = await getActiveProjects();
+  }
+  console.log("projects", projects);
 
   return (
     <div className="h-full w-[90%] m-auto">

@@ -3,7 +3,7 @@ import { Button, Input, Label } from "@/components/ui";
 
 export default function LoginPage() {
   return (
-    <form className="max-w-[80%] mx-auto mt-4">
+    <form className="max-w-[50%] mx-auto mt-4  p-4 ">
       <div className="mb-5">
         <Label htmlFor="email">Email:</Label>
         <Input id="email" name="email" type="email" required />

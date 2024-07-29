@@ -19,6 +19,7 @@ export async function uploadImage(projectId: string, formData: FormData) {
   await revalidatePath("/proyectos");
   return data;
 }
+
 export async function listFiles(projectId: string, userId: string) {
   const supabase = createClient();
   const { data, error } = await supabase.storage
@@ -38,8 +39,23 @@ export async function listFiles(projectId: string, userId: string) {
         return { url: null };
       }
 
-      return { url: url.publicUrl }; // Append the public URL to the file object
+      return { url: url.publicUrl, name: file.name };
     })
   );
   return { filesWithUrls };
+}
+
+export async function deleteFileFromStorage(filePath: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase.storage
+    .from("uploads")
+    .remove([filePath]);
+
+  if (error) {
+    console.error("Error al eliminar el archivo:", error.message);
+    return false;
+  }
+  await revalidatePath("/proyectos");
+
+  return true;
 }

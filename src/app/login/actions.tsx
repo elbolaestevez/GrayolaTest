@@ -26,14 +26,19 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = createClient();
 
-  const data = {
+  const user = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
 
-  const { error } = await supabase.auth.signUp(data);
+  const { error, data } = await supabase.auth.signUp(user);
 
-  if (error) {
+  const { error: errorRole } = await supabase.from("roles").insert({
+    role: "client",
+    user_id: data.user?.id,
+  });
+
+  if (error || errorRole) {
     redirect("/error");
   }
 
