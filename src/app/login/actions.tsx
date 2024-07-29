@@ -33,9 +33,10 @@ export async function signup(formData: FormData) {
 
   const { error, data } = await supabase.auth.signUp(user);
 
-  const { error: errorRole } = await supabase.from("roles").insert({
+  const { error: errorRole } = await supabase.from("users").insert({
     role: "client",
     user_id: data.user?.id,
+    email: data.user?.email,
   });
 
   if (error || errorRole) {

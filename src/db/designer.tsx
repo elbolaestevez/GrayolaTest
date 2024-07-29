@@ -28,3 +28,28 @@ export async function getProjectsByDesigner() {
     return projectsData;
   }
 }
+
+export async function getDesignersEmails(projectId: string) {
+  const supabase = createClient();
+
+  const { data: designers, error } = await supabase
+    .from("designer")
+    .select("user_id")
+    .eq("project_id", projectId);
+
+  if (error) {
+    console.error("Error fetching designers:", error);
+    return;
+  }
+  const designer_ids = designers.map((entry) => entry.user_id);
+  const { data: designerEmail, error: designersError } = await supabase
+    .from("users")
+    .select("*")
+    .in("id", designer_ids);
+
+  if (designersError) {
+    console.error("Error fetching designers emails:", designersError);
+  }
+
+  return designerEmail;
+}

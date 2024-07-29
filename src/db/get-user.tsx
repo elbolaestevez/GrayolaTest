@@ -11,19 +11,19 @@ export async function getUser() {
     return null;
   }
   if (data.user) {
-    const { data: rolesData, error: rolesError } = await supabase
-      .from("roles")
+    const { data: usersData, error: usersError } = await supabase
+      .from("users")
       .select("role")
       .eq("user_id", data.user.id)
       .single();
 
-    if (rolesError) {
-      console.error("Error fetching user role:", rolesError);
+    if (usersError) {
+      console.error("Error fetching user role:", usersError);
       return data.user;
     }
 
-    if (rolesData) {
-      data.user.role = rolesData.role;
+    if (usersData) {
+      data.user.role = usersData.role;
     }
   }
 
