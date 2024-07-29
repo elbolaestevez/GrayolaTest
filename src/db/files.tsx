@@ -3,10 +3,14 @@ import { createClient } from "@/utils/supabase/server";
 import { getUserFromCookies } from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
 
-export async function uploadImage(projectId: string, formData: FormData) {
+export async function uploadImage(
+  projectId: string,
+  formData: FormData,
+  userId: string
+) {
   const file = formData.get("file") as File;
   const supabase = createClient();
-  const { role, userId } = getUserFromCookies();
+  const { role } = getUserFromCookies();
   const filePath = `${userId}/${projectId}/${file.name}`;
   const { data, error } = await supabase.storage
     .from("uploads")

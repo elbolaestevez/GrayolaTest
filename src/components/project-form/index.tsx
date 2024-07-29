@@ -102,7 +102,7 @@ export const ProjectForm: React.FC<CreateProjectProps> = ({
   const handleCreateProyect = async () => {
     const project = await createProyect(title, description);
     uploads.forEach((upload) => {
-      uploadImage(project?.id, upload);
+      uploadImage(project?.id, upload, project.user_id);
     });
     toast({
       description: "Has creado el proyecto",
@@ -114,6 +114,9 @@ export const ProjectForm: React.FC<CreateProjectProps> = ({
   const handleEditProyect = async () => {
     if (project?.id) {
       await updateProjectById(project.id, title, description);
+      uploads.forEach((upload) => {
+        uploadImage(project?.id, upload, project.user_id);
+      });
       toast({
         description: "Has editado el proyecto",
       });

@@ -16,11 +16,13 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect("/error");
+    return {
+      message: "Could not log in.",
+    };
+  } else {
+    revalidatePath("/", "layout");
+    redirect("/proyectos");
   }
-
-  revalidatePath("/", "layout");
-  redirect("/proyectos");
 }
 
 export async function signup(formData: FormData) {
@@ -40,9 +42,8 @@ export async function signup(formData: FormData) {
   });
 
   if (error || errorRole) {
-    redirect("/error");
+    return {
+      message: "Could not create user.",
+    };
   }
-
-  revalidatePath("/", "layout");
-  redirect("/login");
 }

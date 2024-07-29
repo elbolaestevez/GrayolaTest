@@ -1,7 +1,12 @@
+"use client";
+import { useToast } from "@/components/ui/use-toast";
 import { login, signup } from "./actions";
 import { Button, Input, Label } from "@/components/ui";
+import { useState } from "react";
 
 export default function LoginPage() {
+  const { toast } = useToast();
+
   return (
     <form className="max-w-[50%] mx-auto mt-4  p-4 ">
       <div className="mb-5">
@@ -14,10 +19,34 @@ export default function LoginPage() {
       </div>
 
       <div className="flex gap-4 mt-2 justify-center">
-        <Button variant={"secondary"} formAction={login}>
+        <Button
+          variant={"secondary"}
+          formAction={async (formData) => {
+            const data = await login(formData);
+            if (data?.message == "Could not log in.") {
+              toast({
+                description: "No has podido loguearte",
+              });
+            }
+          }}
+        >
           Log in
         </Button>
-        <Button variant={"default"} formAction={signup}>
+        <Button
+          variant={"default"}
+          formAction={async (formData) => {
+            const data = await signup(formData);
+            if (data?.message == "Could not create user.") {
+              toast({
+                description: "No has podido crear la cuenta",
+              });
+            } else {
+              toast({
+                description: "Has creado una cuenta, ahora loguiate",
+              });
+            }
+          }}
+        >
           Sign up
         </Button>
       </div>

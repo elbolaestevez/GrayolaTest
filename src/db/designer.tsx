@@ -72,10 +72,19 @@ export async function getDesignersEmailsByProject(projectId: string) {
   return designerEmail;
 }
 
-export async function assignDesigners(projectId: string, userIds: string[]) {
+export async function assignDesigners(projectId: string, newUserIds: string[]) {
   const supabase = createClient();
+  const { error: deleteError } = await supabase
+    .from("designer")
+    .delete()
+    .match({ project_id: projectId });
 
-  const designerEntries = userIds.map((userId) => ({
+  if (deleteError) {
+    console.error("Error deleting existing designers:", deleteError);
+    return { error: deleteError };
+  }
+
+  const designerEntries = newUserIds.map((userId) => ({
     project_id: projectId,
     user_id: userId,
   }));
@@ -90,35 +99,5 @@ export async function assignDesigners(projectId: string, userIds: string[]) {
   }
   await revalidatePath("/proyectos");
 
-  return { data };
-}
-
-export async function reassignDesigners(
-  projectId: string,
-  newUserIds: string[]
-) {
-  const supabase = createClient();
-
-  const { error: deleteError } = await supabase
-    .from("designer")
-    .delete()
-    .match({ project_id: projectId });
-
-  if (deleteError) {
-    console.error("Error deleting existing designers:", deleteError);
-    return { error: deleteError };
-  }
-
-  const { data, error: assignError } = await assignDesigners(
-    projectId,
-    newUserIds
-  );
-
-  if (assignError) {
-    console.error("Error reassigning designers:", assignError);
-    return { error: assignError };
-  }
-
-  console.log("Reassigned designers successfully:", data);
   return { data };
 }
