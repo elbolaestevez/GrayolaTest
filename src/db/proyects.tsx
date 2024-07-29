@@ -17,8 +17,7 @@ export async function createProyect(title: string, description: string) {
     .select();
 
   if (error) {
-    console.log("Error fetching user:", error);
-    return null;
+    throw error;
   }
   await revalidatePath("/proyectos");
 
@@ -89,7 +88,7 @@ export async function updateProjectById(
 
   if (error) {
     console.log("Error updating project:", error);
-    return null;
+    throw error;
   }
   await revalidatePath("/proyectos");
 

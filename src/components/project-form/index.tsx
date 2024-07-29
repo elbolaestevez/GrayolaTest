@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTrigger,
   DialogTitle,
+  DialogDescription,
   Input,
   Label,
   DialogClose,
@@ -100,36 +101,45 @@ export const ProjectForm: React.FC<CreateProjectProps> = ({
   };
 
   const handleCreateProyect = async () => {
-    const project = await createProyect(title, description);
-    if (!project) {
-      toast({
-        description: "No se ha podido crear el proyecto",
-      });
-    }
-    uploads.forEach((upload) => {
-      uploadImage(project?.id, upload, project.user_id);
-    });
-    toast({
-      description: "Has creado el proyecto",
-    });
+    try {
+      const project = await createProyect(title, description);
 
-    handleCLose();
-  };
-
-  const handleEditProyect = async () => {
-    if (project?.id) {
-      await updateProjectById(project.id, title, description);
       uploads.forEach((upload) => {
         uploadImage(project?.id, upload, project.user_id);
       });
       toast({
-        description: "Has editado el proyecto",
+        description: "Has creado el proyecto",
       });
+    } catch (error: any) {
+      toast({
+        description: "Error al crear el proyecto",
+      });
+    } finally {
+      handleCLose();
+    }
+  };
+
+  const handleEditProyect = async () => {
+    if (project?.id) {
+      try {
+        await updateProjectById(project.id, title, description);
+        uploads.forEach((upload) => {
+          uploadImage(project?.id, upload, project.user_id);
+        });
+        toast({
+          description: "Has editado el proyecto",
+        });
+      } catch (error) {
+        toast({
+          description: "Error al editar el proyecto",
+        });
+      } finally {
+        handleCLose();
+      }
     }
   };
 
   const handleRemoveFile = (fileName: string | undefined) => {
-    console.log("asdasd", filesDb, fileName);
     if (filesDb && filesDb.length > 0 && fileName) {
       setFilesDb(filesDb.filter((file) => file.name !== fileName));
       handleRemoveFileFromDb(fileName);
@@ -165,6 +175,7 @@ export const ProjectForm: React.FC<CreateProjectProps> = ({
               {isCreateMode ? "Crear Proyecto" : "Editar proyecto"}
             </DialogTitle>
           </DialogHeader>
+          <DialogDescription />
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
