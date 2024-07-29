@@ -2,6 +2,22 @@
 import { getUserFromCookies } from "@/utils/cookies";
 import { createClient } from "@/utils/supabase/server";
 
+export async function getAllDesigners() {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("role", "designer");
+
+  if (error) {
+    console.error("Error fetching designers:", error);
+    return;
+  }
+
+  return data;
+}
+
 export async function getProjectsByDesigner() {
   const supabase = createClient();
   const { userId } = getUserFromCookies();
@@ -29,15 +45,13 @@ export async function getProjectsByDesigner() {
   }
 }
 
-export async function getDesignersEmails(projectId: string) {
+export async function getDesignersEmailsByProject(projectId: string) {
   const supabase = createClient();
-  console.log("projectId", projectId);
 
   const { data: designers, error } = await supabase
     .from("designer")
     .select("user_id")
     .eq("project_id", projectId);
-  console.log("designersData", designers);
 
   if (error) {
     console.error("Error fetching designers:", error);
@@ -45,7 +59,6 @@ export async function getDesignersEmails(projectId: string) {
   }
   const designer_ids = designers.map((entry) => entry.user_id);
 
-  console.log("designer_ids", designer_ids);
   const { data: designerEmail, error: designersError } = await supabase
     .from("users")
     .select("*")

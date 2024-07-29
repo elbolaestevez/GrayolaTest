@@ -22,3 +22,12 @@ export {
   MenubarSeparator,
   MenubarItem,
 } from "./menubar";
+export {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+} from "./select";
