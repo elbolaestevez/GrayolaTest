@@ -9,9 +9,14 @@ import {
 import { listFiles } from "@/db/files";
 import Link from "next/link";
 import { EditMenu } from "../edit-menu";
-import { ProjectCardProps } from "@/types/project";
+import { ProjectProps } from "@/types/project";
 
-export async function ProjectCard({ project }: ProjectCardProps) {
+interface IProjectCardProps {
+  project: ProjectProps;
+  role: string | undefined;
+}
+
+export async function ProjectCard({ project, role }: IProjectCardProps) {
   const { filesWithUrls } = await listFiles(project.id, project.user_id);
   const { title, description } = project;
   return (
@@ -19,7 +24,9 @@ export async function ProjectCard({ project }: ProjectCardProps) {
       <CardHeader>
         <div className="flex justify-between">
           <CardTitle>{title}</CardTitle>
-          <EditMenu filesWithUrls={filesWithUrls} project={project} />
+          {role === "admin" && (
+            <EditMenu filesWithUrls={filesWithUrls} project={project} />
+          )}
         </div>
       </CardHeader>
       <CardContent>{description}</CardContent>

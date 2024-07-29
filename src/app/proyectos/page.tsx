@@ -16,7 +16,6 @@ const Proyectos = async () => {
   } else if (user?.role === "admin") {
     projects = await getActiveProjects();
   }
-  console.log("projects", projects);
 
   return (
     <div className="h-full w-[90%] m-auto">
@@ -26,7 +25,7 @@ const Proyectos = async () => {
       <div className="flex flex-wrap mt-12">
         {projects?.map((project) => (
           <div key={project.id} className="px-3 mt-2 mb-2">
-            <ProjectCard project={project} />
+            <ProjectCard role={user?.role} project={project} />
           </div>
         ))}
       </div>

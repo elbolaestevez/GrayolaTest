@@ -15,7 +15,6 @@ import { ProjectForm } from "../project-form";
 import { ProjectProps } from "@/types/project";
 import { deleteProjectById } from "@/db/proyects";
 import { useToast } from "../ui/use-toast";
-import { useState } from "react";
 import { AssignForm } from "../assign-form";
 
 interface EditMenuProps {
@@ -33,9 +32,7 @@ interface EditMenuProps {
 }
 
 export const EditMenu = ({ project, filesWithUrls }: EditMenuProps) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
-  const openDialog = () => setIsDialogOpen(true);
 
   const handleDeleteProject = async () => {
     await deleteProjectById(project.id);
